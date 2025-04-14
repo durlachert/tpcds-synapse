@@ -1,0 +1,17 @@
+{
+	"name": "create file format",
+	"properties": {
+		"content": {
+			"query": "\nDROP EXTERNAL FILE FORMAT MyFileFormat;\nGO\n\nCREATE EXTERNAL FILE FORMAT MyFileFormat\nWITH (\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n         FIELD_TERMINATOR = '|',\n         STRING_DELIMITER = '\"',\n         FIRST_ROW = 1\n    )\n);\nGO\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapsededicatedsqlpool",
+				"poolName": "synapsededicatedsqlpool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

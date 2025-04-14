@@ -1,0 +1,17 @@
+{
+	"name": "create data source",
+	"properties": {
+		"content": {
+			"query": "DROP EXTERNAL DATA SOURCE MyBlobData;\nGO\n\nCREATE EXTERNAL DATA SOURCE MyBlobData\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'abfss://synapsefs@tfsynapsestorage.dfs.core.windows.net',\n    CREDENTIAL = MyBlobCredential\n);\nGO",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapsededicatedsqlpool",
+				"poolName": "synapsededicatedsqlpool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
