@@ -10,7 +10,144 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlDWTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "cc_call_center_sk",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cc_call_center_id",
+				"type": "char"
+			},
+			{
+				"name": "cc_rec_start_date",
+				"type": "date"
+			},
+			{
+				"name": "cc_rec_end_date",
+				"type": "date"
+			},
+			{
+				"name": "cc_closed_date_sk",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cc_open_date_sk",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cc_name",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_class",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_employees",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cc_sq_ft",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cc_hours",
+				"type": "char"
+			},
+			{
+				"name": "cc_manager",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_mkt_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cc_mkt_class",
+				"type": "char"
+			},
+			{
+				"name": "cc_mkt_desc",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_market_manager",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_division",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cc_division_name",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_company",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cc_company_name",
+				"type": "char"
+			},
+			{
+				"name": "cc_street_number",
+				"type": "char"
+			},
+			{
+				"name": "cc_street_name",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_street_type",
+				"type": "char"
+			},
+			{
+				"name": "cc_suite_number",
+				"type": "char"
+			},
+			{
+				"name": "cc_city",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_county",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_state",
+				"type": "char"
+			},
+			{
+				"name": "cc_zip",
+				"type": "char"
+			},
+			{
+				"name": "cc_country",
+				"type": "varchar"
+			},
+			{
+				"name": "cc_gmt_offset",
+				"type": "decimal",
+				"precision": 5,
+				"scale": 2
+			},
+			{
+				"name": "cc_tax_percentage",
+				"type": "decimal",
+				"precision": 5,
+				"scale": 2
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "call_center"
