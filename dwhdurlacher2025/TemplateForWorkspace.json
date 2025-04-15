@@ -1,0 +1,536 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"type": "string",
+			"metadata": "Workspace name",
+			"defaultValue": "dwhdurlacher2025"
+		},
+		"dwhdurlacher2025-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'dwhdurlacher2025-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:dwhdurlacher2025.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"mysynapseresourcegroupdurlacherth123-WorkspaceDefaultSqlServer_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'mysynapseresourcegroupdurlacherth123-WorkspaceDefaultSqlServer'",
+			"defaultValue": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:mysynapseresourcegroupdurlacherth123.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"dwhdurlacher2025-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://tfsynapsestorage.dfs.core.windows.net"
+		},
+		"mysynapseresourcegroupdurlacherth123-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://tfsynapsestorage.dfs.core.windows.net"
+		}
+	},
+	"variables": {
+		"workspaceId": "[concat('Microsoft.Synapse/workspaces/', parameters('workspaceName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('workspaceName'), '/Pipeline 1')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "DelimitedTextSource",
+								"storeSettings": {
+									"type": "AzureBlobFSReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "DelimitedTextReadSettings"
+								}
+							},
+							"sink": {
+								"type": "SqlPoolSink",
+								"allowCopyCommand": true,
+								"copyCommandSettings": {}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "DelimitedText1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "SqlPoolTable1",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/DelimitedText1')]",
+				"[concat(variables('workspaceId'), '/datasets/SqlPoolTable1')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DelimitedText1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "dwhdurlacher2025-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "call_center_clean.dat",
+						"folderPath": "data",
+						"fileSystem": "synapsefs"
+					},
+					"columnDelimiter": "|",
+					"escapeChar": "\\",
+					"firstRowAsHeader": false,
+					"quoteChar": "\\"
+				},
+				"schema": [
+					{
+						"name": "1|AAAAAAAABAAAAAAA|1998-01-01|||2450952|NY Metro|large|2|1138|8AM-4PM|Bob Belcher|6|More than other authori|Shared others could not count fully dollars. New members ca|Julius Tran|3|pri|6|cally|730|Ash Hill|Boulevard|Suite 0|Midway|Williamson County|TN|31904|United States|-5|0.11",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/dwhdurlacher2025-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/SqlPoolTable1')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "SqlPoolTable",
+				"schema": [
+					{
+						"name": "cc_call_center_sk",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cc_call_center_id",
+						"type": "char"
+					},
+					{
+						"name": "cc_rec_start_date",
+						"type": "date"
+					},
+					{
+						"name": "cc_rec_end_date",
+						"type": "date"
+					},
+					{
+						"name": "cc_closed_date_sk",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cc_open_date_sk",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cc_name",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_class",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_employees",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cc_sq_ft",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cc_hours",
+						"type": "char"
+					},
+					{
+						"name": "cc_manager",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_mkt_id",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cc_mkt_class",
+						"type": "char"
+					},
+					{
+						"name": "cc_mkt_desc",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_market_manager",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_division",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cc_division_name",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_company",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "cc_company_name",
+						"type": "char"
+					},
+					{
+						"name": "cc_street_number",
+						"type": "char"
+					},
+					{
+						"name": "cc_street_name",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_street_type",
+						"type": "char"
+					},
+					{
+						"name": "cc_suite_number",
+						"type": "char"
+					},
+					{
+						"name": "cc_city",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_county",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_state",
+						"type": "char"
+					},
+					{
+						"name": "cc_zip",
+						"type": "char"
+					},
+					{
+						"name": "cc_country",
+						"type": "varchar"
+					},
+					{
+						"name": "cc_gmt_offset",
+						"type": "decimal",
+						"precision": 5,
+						"scale": 2
+					},
+					{
+						"name": "cc_tax_percentage",
+						"type": "decimal",
+						"precision": 5,
+						"scale": 2
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "call_center"
+				},
+				"sqlPool": {
+					"referenceName": "synapsededicatedsqlpool",
+					"type": "SqlPoolReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/sqlPools/synapsededicatedsqlpool')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/dwhdurlacher2025-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('dwhdurlacher2025-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/dwhdurlacher2025-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('dwhdurlacher2025-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/mysynapseresourcegroupdurlacherth123-WorkspaceDefaultSqlServer')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"parameters": {
+					"DBName": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDW",
+				"typeProperties": {
+					"connectionString": "[parameters('mysynapseresourcegroupdurlacherth123-WorkspaceDefaultSqlServer_connectionString')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/mysynapseresourcegroupdurlacherth123-WorkspaceDefaultStorage')]",
+			"type": "Microsoft.Synapse/workspaces/linkedServices",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('mysynapseresourcegroupdurlacherth123-WorkspaceDefaultStorage_properties_typeProperties_url')]"
+				},
+				"connectVia": {
+					"referenceName": "AutoResolveIntegrationRuntime",
+					"type": "IntegrationRuntimeReference"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/AutoResolveIntegrationRuntime')]",
+			"type": "Microsoft.Synapse/workspaces/integrationRuntimes",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 8,
+							"timeToLive": 0
+						}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
+			"type": "Microsoft.Synapse/workspaces/credentials",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "ManagedIdentity",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/copy into tables from csv')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- Copy data into call_center table\nCOPY INTO dbo.call_center\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/call_center_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into catalog_page table\nCOPY INTO dbo.catalog_page\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/catalog_page_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into catalog_returns table\nCOPY INTO dbo.catalog_returns\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/catalog_returns_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into catalog_sales table\nCOPY INTO dbo.catalog_sales\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/catalog_sales_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into customer_address table\nCOPY INTO dbo.customer_address\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/customer_address_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into customer table\nCOPY INTO dbo.customer\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/customer_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into customer_demographics table\nCOPY INTO dbo.customer_demographics\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/customer_demographics_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into date_dim table\nCOPY INTO dbo.date_dim\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/date_dim_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into household_demographics table\nCOPY INTO dbo.household_demographics\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/household_demographics_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into income_band table\nCOPY INTO dbo.income_band\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/income_band_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into inventory table\nCOPY INTO dbo.inventory\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/inventory_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into item table\nCOPY INTO dbo.item\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/item_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into promotion table\nCOPY INTO dbo.promotion\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/promotion_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into reason table\nCOPY INTO dbo.reason\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/reason_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into ship_mode table\nCOPY INTO dbo.ship_mode\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/ship_mode_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into store table\nCOPY INTO dbo.store\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/store_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into store_returns table\nCOPY INTO dbo.store_returns\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/store_returns_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into store_sales table\nCOPY INTO dbo.store_sales\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/store_sales_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into time_dim table\nCOPY INTO dbo.time_dim\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/time_dim_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into warehouse table\nCOPY INTO dbo.warehouse\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/warehouse_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into web_page table\nCOPY INTO dbo.web_page\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/web_page_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into web_returns table\nCOPY INTO dbo.web_returns\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/web_returns_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into web_sales table\nCOPY INTO dbo.web_sales\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/web_sales_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n\n-- Copy data into web_site table\nCOPY INTO dbo.web_site\nFROM 'https://tfsynapsestorage.dfs.core.windows.net/synapsefs/data/web_site_clean.dat'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),    FIELDQUOTE = '\"',\n    ROWTERMINATOR = '0x0D0A',\n    FIELDTERMINATOR = '|'\n);\nGO\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synapsededicatedsqlpool",
+						"poolName": "synapsededicatedsqlpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/create credential')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "-- Create a master key (only needed once)\nCREATE MASTER KEY;\nGO\n\n-- Create a credential using a SAS token (adjust the SAS token accordingly)\nCREATE DATABASE SCOPED CREDENTIAL MyBlobCredential\nWITH\n    IDENTITY = 'SHARED ACCESS SIGNATURE',\n    SECRET = 'sv=2020-08-04&ss=bfqt&srt=sco&sp=rwdlacupx&se=2026-01-01T00:00:00Z&st=2025-01-01T00:00:00Z&spr=https';\nGO\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synapsededicatedsqlpool",
+						"poolName": "synapsededicatedsqlpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/create data source')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "DROP EXTERNAL DATA SOURCE MyBlobData;\nGO\n\nCREATE EXTERNAL DATA SOURCE MyBlobData\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'abfss://synapsefs@tfsynapsestorage.dfs.core.windows.net',\n    CREDENTIAL = MyBlobCredential\n);\nGO",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synapsededicatedsqlpool",
+						"poolName": "synapsededicatedsqlpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/create file format')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\nDROP EXTERNAL FILE FORMAT MyFileFormat;\nGO\n\nCREATE EXTERNAL FILE FORMAT MyFileFormat\nWITH (\n    FORMAT_TYPE = DELIMITEDTEXT,\n    FORMAT_OPTIONS (\n         FIELD_TERMINATOR = '|',\n         STRING_DELIMITER = '\"',\n         FIRST_ROW = 1\n    )\n);\nGO\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synapsededicatedsqlpool",
+						"poolName": "synapsededicatedsqlpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/create tables')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "\n\n-- Drop tables if they exist using the OBJECT_ID method\nIF OBJECT_ID('dbo.call_center','U') IS NOT NULL DROP TABLE dbo.call_center;\nIF OBJECT_ID('dbo.catalog_page','U') IS NOT NULL DROP TABLE dbo.catalog_page;\nIF OBJECT_ID('dbo.catalog_returns','U') IS NOT NULL DROP TABLE dbo.catalog_returns;\nIF OBJECT_ID('dbo.catalog_sales','U') IS NOT NULL DROP TABLE dbo.catalog_sales;\nIF OBJECT_ID('dbo.customer','U') IS NOT NULL DROP TABLE dbo.customer;\nIF OBJECT_ID('dbo.customer_address','U') IS NOT NULL DROP TABLE dbo.customer_address;\nIF OBJECT_ID('dbo.customer_demographics','U') IS NOT NULL DROP TABLE dbo.customer_demographics;\nIF OBJECT_ID('dbo.date_dim','U') IS NOT NULL DROP TABLE dbo.date_dim;\nIF OBJECT_ID('dbo.DimDate','U') IS NOT NULL DROP TABLE dbo.DimDate;\nIF OBJECT_ID('dbo.household_demographics','U') IS NOT NULL DROP TABLE dbo.household_demographics;\nIF OBJECT_ID('dbo.income_band','U') IS NOT NULL DROP TABLE dbo.income_band;\nIF OBJECT_ID('dbo.inventory','U') IS NOT NULL DROP TABLE dbo.inventory;\nIF OBJECT_ID('dbo.item','U') IS NOT NULL DROP TABLE dbo.item;\nIF OBJECT_ID('dbo.promotion','U') IS NOT NULL DROP TABLE dbo.promotion;\nIF OBJECT_ID('dbo.reason','U') IS NOT NULL DROP TABLE dbo.reason;\nIF OBJECT_ID('dbo.ship_mode','U') IS NOT NULL DROP TABLE dbo.ship_mode;\nIF OBJECT_ID('dbo.store','U') IS NOT NULL DROP TABLE dbo.store;\nIF OBJECT_ID('dbo.store_returns','U') IS NOT NULL DROP TABLE dbo.store_returns;\nIF OBJECT_ID('dbo.store_sales','U') IS NOT NULL DROP TABLE dbo.store_sales;\nIF OBJECT_ID('dbo.time_dim','U') IS NOT NULL DROP TABLE dbo.time_dim;\nIF OBJECT_ID('dbo.warehouse','U') IS NOT NULL DROP TABLE dbo.warehouse;\nIF OBJECT_ID('dbo.web_page','U') IS NOT NULL DROP TABLE dbo.web_page;\nIF OBJECT_ID('dbo.web_returns','U') IS NOT NULL DROP TABLE dbo.web_returns;\nIF OBJECT_ID('dbo.web_sales','U') IS NOT NULL DROP TABLE dbo.web_sales;\nIF OBJECT_ID('dbo.web_site','U') IS NOT NULL DROP TABLE dbo.web_site;\nGO\n\n\n/*---------------------------------------*\n * Table: call_center (Dimension)\n * Distribution: HASH on surrogate key to help join performance\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.call_center\n(\n    cc_call_center_sk      int          NOT NULL,\n    cc_call_center_id      char(16)     NOT NULL,\n    cc_rec_start_date      date         NULL,\n    cc_rec_end_date        date         NULL,\n    cc_closed_date_sk      int          NULL,\n    cc_open_date_sk        int          NULL,\n    cc_name                varchar(50)  NULL,\n    cc_class               varchar(50)  NULL,\n    cc_employees           int          NULL,\n    cc_sq_ft               int          NULL,\n    cc_hours               char(20)     NULL,\n    cc_manager             varchar(40)  NULL,\n    cc_mkt_id              int          NULL,\n    cc_mkt_class           char(50)     NULL,\n    cc_mkt_desc            varchar(100) NULL,\n    cc_market_manager      varchar(40)  NULL,\n    cc_division            int          NULL,\n    cc_division_name       varchar(50)  NULL,\n    cc_company             int          NULL,\n    cc_company_name        char(50)     NULL,\n    cc_street_number       char(10)     NULL,\n    cc_street_name         varchar(60)  NULL,\n    cc_street_type         char(15)     NULL,\n    cc_suite_number        char(10)     NULL,\n    cc_city                varchar(60)  NULL,\n    cc_county              varchar(30)  NULL,\n    cc_state               char(2)      NULL,\n    cc_zip                 char(10)     NULL,\n    cc_country             varchar(20)  NULL,\n    cc_gmt_offset          decimal(5,2) NULL,\n    cc_tax_percentage      decimal(5,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH(cc_call_center_sk),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: catalog_page (Dimension)\n * Distribution: REPLICATE (small dimension table)\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.catalog_page\n(\n    cp_catalog_page_sk     int          NOT NULL,\n    cp_catalog_page_id     char(16)     NOT NULL,\n    cp_start_date_sk       int          NULL,\n    cp_end_date_sk         int          NULL,\n    cp_department          varchar(50)  NULL,\n    cp_catalog_number      int          NULL,\n    cp_catalog_page_number int          NULL,\n    cp_description         varchar(100) NULL,\n    cp_type                varchar(100) NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: catalog_returns (Fact)\n * Distribution: HASH on cr_item_sk\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.catalog_returns\n(\n    cr_returned_date_sk       int          NULL,\n    cr_returned_time_sk       int          NULL,\n    cr_item_sk                int          NOT NULL,\n    cr_refunded_customer_sk   int          NULL,\n    cr_refunded_cdemo_sk      int          NULL,\n    cr_refunded_hdemo_sk      int          NULL,\n    cr_refunded_addr_sk       int          NULL,\n    cr_returning_customer_sk  int          NULL,\n    cr_returning_cdemo_sk     int          NULL,\n    cr_returning_hdemo_sk     int          NULL,\n    cr_returning_addr_sk      int          NULL,\n    cr_call_center_sk         int          NULL,\n    cr_catalog_page_sk        int          NULL,\n    cr_ship_mode_sk           int          NULL,\n    cr_warehouse_sk           int          NULL,\n    cr_reason_sk              int          NULL,\n    cr_order_number           int          NOT NULL,\n    cr_return_quantity        int          NULL,\n    cr_return_amount          decimal(7,2) NULL,\n    cr_return_tax             decimal(7,2) NULL,\n    cr_return_amt_inc_tax     decimal(7,2) NULL,\n    cr_fee                    decimal(7,2) NULL,\n    cr_return_ship_cost       decimal(7,2) NULL,\n    cr_refunded_cash          decimal(7,2) NULL,\n    cr_reversed_charge        decimal(7,2) NULL,\n    cr_store_credit           decimal(7,2) NULL,\n    cr_net_loss               decimal(7,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH(cr_item_sk),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: catalog_sales (Fact)\n * Distribution: HASH on cs_item_sk\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.catalog_sales\n(\n    cs_sold_date_sk           int         NULL,\n    cs_sold_time_sk           int         NULL,\n    cs_ship_date_sk           int         NULL,\n    cs_bill_customer_sk       int         NULL,\n    cs_bill_cdemo_sk          int         NULL,\n    cs_bill_hdemo_sk          int         NULL,\n    cs_bill_addr_sk           int         NULL,\n    cs_ship_customer_sk       int         NULL,\n    cs_ship_cdemo_sk          int         NULL,\n    cs_ship_hdemo_sk          int         NULL,\n    cs_ship_addr_sk           int         NULL,\n    cs_call_center_sk         int         NULL,\n    cs_catalog_page_sk        int         NULL,\n    cs_ship_mode_sk           int         NULL,\n    cs_warehouse_sk           int         NULL,\n    cs_item_sk                int         NOT NULL,\n    cs_promo_sk               int         NULL,\n    cs_order_number           int         NOT NULL,\n    cs_quantity               int         NULL,\n    cs_wholesale_cost         decimal(7,2) NULL,\n    cs_list_price             decimal(7,2) NULL,\n    cs_sales_price            decimal(7,2) NULL,\n    cs_ext_discount_amt       decimal(7,2) NULL,\n    cs_ext_sales_price        decimal(7,2) NULL,\n    cs_ext_wholesale_cost     decimal(7,2) NULL,\n    cs_ext_list_price         decimal(7,2) NULL,\n    cs_ext_tax                decimal(7,2) NULL,\n    cs_coupon_amt             decimal(7,2) NULL,\n    cs_ext_ship_cost          decimal(7,2) NULL,\n    cs_net_paid               decimal(7,2) NULL,\n    cs_net_paid_inc_tax       decimal(7,2) NULL,\n    cs_net_paid_inc_ship      decimal(7,2) NULL,\n    cs_net_paid_inc_ship_tax  decimal(7,2) NULL,\n    cs_net_profit             decimal(7,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH(cs_item_sk),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: customer (Dimension)\n * Distribution: ROUND_ROBIN\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.customer\n(\n    c_customer_sk          int         NOT NULL,\n    c_customer_id          char(16)    NULL,\n    c_current_cdemo_sk     int         NULL,\n    c_current_hdemo_sk     int         NULL,\n    c_current_addr_sk      int         NULL,\n    c_first_shipto_date_sk int         NULL,\n    c_first_sales_date_sk  int         NULL,\n    c_salutation           char(10)    NULL,\n    c_first_name           char(20)    NULL,\n    c_last_name            char(30)    NULL,\n    c_preferred_cust_flag  char(1)     NULL,\n    c_birth_day            int         NULL,\n    c_birth_month          int         NULL,\n    c_birth_year           int         NULL,\n    c_birth_country        varchar(20) NULL,\n    c_login                char(13)    NULL,\n    c_email_address        char(50)    NULL,\n    c_last_review_date_sk  int         NULL\n)\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: customer_address (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.customer_address\n(\n    ca_address_sk    int         NOT NULL,\n    ca_address_id    char(16)    NULL,\n    ca_street_number char(10)    NULL,\n    ca_street_name   varchar(60) NULL,\n    ca_street_type   char(15)    NULL,\n    ca_suite_number  char(10)    NULL,\n    ca_city          varchar(60) NULL,\n    ca_county        varchar(30) NULL,\n    ca_state         char(2)     NULL,\n    ca_zip           char(10)    NULL,\n    ca_country       varchar(20) NULL,\n    ca_gmt_offset    decimal(5,2) NULL,\n    ca_location_type char(20)    NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: customer_demographics (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.customer_demographics\n(\n    cd_demo_sk          int     NOT NULL,\n    cd_gender           char(1)  NULL,\n    cd_marital_status   char(1)  NULL,\n    cd_education_status char(20) NULL,\n    cd_purchase_estimate int    NULL,\n    cd_credit_rating    char(10) NULL,\n    cd_dep_count        int      NULL,\n    cd_dep_employed_count int   NULL,\n    cd_dep_college_count int    NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: date_dim (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.date_dim\n(\n    d_date_sk         int      NOT NULL,\n    d_date_id         char(16) NULL,\n    d_date            date     NULL,\n    d_month_seq       int      NULL,\n    d_week_seq        int      NULL,\n    d_quarter_seq     int      NULL,\n    d_year            int      NULL,\n    d_dow             int      NULL,\n    d_moy             int      NULL,\n    d_dom             int      NULL,\n    d_qoy             int      NULL,\n    d_fy_year         int      NULL,\n    d_fy_quarter_seq  int      NULL,\n    d_fy_week_seq     int      NULL,\n    d_day_name        char(9)  NULL,\n    d_quarter_name    char(6)  NULL,\n    d_holiday         char(1)  NULL,\n    d_weekend         char(1)  NULL,\n    d_following_holiday char(1) NULL,\n    d_first_dom       int      NULL,\n    d_last_dom        int      NULL,\n    d_same_day_ly     int      NULL,\n    d_same_day_lq     int      NULL,\n    d_current_day     char(1)  NULL,\n    d_current_week    char(1)  NULL,\n    d_current_month   char(1)  NULL,\n    d_current_quarter char(1)  NULL,\n    d_current_year    char(1)  NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: DimDate (Alternate Date Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.DimDate\n(\n    DateKey         int         NOT NULL,\n    DateAltKey      datetime    NULL,\n    CalendarYear    int         NULL,\n    CalendarQuarter int         NULL,\n    MonthNumber     int         NULL,\n    MonthName       nvarchar(50) NULL,\n    DayOfMonth      int         NULL,\n    DayOfWeekNumber int         NULL,\n    DayOfWeekName   nvarchar(50) NULL,\n    FiscalYear      int         NULL,\n    FiscalQuarter int           NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: ECDC_Cases (Fact/Semi-dimension)\n * Distribution: ROUND_ROBIN\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.ECDC_Cases\n(\n    date_rep              date       NOT NULL,\n    day                   int        NULL,\n    month                 int        NULL,\n    year                  int        NULL,\n    cases                 int        NULL,\n    deaths                int        NULL,\n    countries_and_territories nvarchar(255) NULL,\n    geo_id                nvarchar(10) NOT NULL,\n    country_territory_code nvarchar(10) NULL,\n    continent_exp         nvarchar(100) NULL,\n    load_date             datetime   NULL,\n    iso_country           nvarchar(10) NULL\n)\nWITH\n(\n    DISTRIBUTION = ROUND_ROBIN,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: household_demographics (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.household_demographics\n(\n    hd_demo_sk         int     NOT NULL,\n    hd_income_band_sk  int     NULL,\n    hd_buy_potential   char(15) NULL,\n    hd_dep_count       int     NULL,\n    hd_vehicle_count   int     NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: income_band (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.income_band\n(\n    ib_income_band_sk int  NOT NULL,\n    ib_lower_bound    int  NULL,\n    ib_upper_bound    int  NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: inventory (Fact)\n * Distribution: HASH on inv_item_sk\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.inventory\n(\n    inv_date_sk          int  NOT NULL,\n    inv_item_sk          int  NOT NULL,\n    inv_warehouse_sk     int  NOT NULL,\n    inv_quantity_on_hand int  NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH(inv_item_sk),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: item (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.item\n(\n    i_item_sk         int         NOT NULL,\n    i_item_id         char(16)    NULL,\n    i_rec_start_date  date        NULL,\n    i_rec_end_date    date        NULL,\n    i_item_desc       varchar(200) NULL,\n    i_current_price   decimal(7,2) NULL,\n    i_wholesale_cost  decimal(7,2) NULL,\n    i_brand_id        int         NULL,\n    i_brand           char(50)    NULL,\n    i_class_id        int         NULL,\n    i_class           char(50)    NULL,\n    i_category_id     int         NULL,\n    i_category        char(50)    NULL,\n    i_manufact_id     int         NULL,\n    i_manufact        char(50)    NULL,\n    i_size            char(20)    NULL,\n    i_formulation     char(20)    NULL,\n    i_color           char(20)    NULL,\n    i_units           char(10)    NULL,\n    i_container       char(10)    NULL,\n    i_manager_id      int         NULL,\n    i_product_name    char(50)    NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: promotion (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.promotion\n(\n    p_promo_sk       int          NOT NULL,\n    p_promo_id       char(16)     NULL,\n    p_start_date_sk  int          NULL,\n    p_end_date_sk    int          NULL,\n    p_item_sk        int          NULL,\n    p_cost           decimal(15,2) NULL,\n    p_response_target int         NULL,\n    p_promo_name     char(50)     NULL,\n    p_channel_dmail  char(1)      NULL,\n    p_channel_email  char(1)      NULL,\n    p_channel_catalog char(1)     NULL,\n    p_channel_tv     char(1)      NULL,\n    p_channel_radio  char(1)      NULL,\n    p_channel_press  char(1)      NULL,\n    p_channel_event  char(1)      NULL,\n    p_channel_demo   char(1)      NULL,\n    p_channel_details varchar(100) NULL,\n    p_purpose        char(15)     NULL,\n    p_discount_active char(1)     NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: reason (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.reason\n(\n    r_reason_sk    int    NOT NULL,\n    r_reason_id    char(16) NULL,\n    r_reason_desc  char(100) NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: ship_mode (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.ship_mode\n(\n    sm_ship_mode_sk int    NOT NULL,\n    sm_ship_mode_id char(16) NULL,\n    sm_type         char(30) NULL,\n    sm_code         char(10) NULL,\n    sm_carrier      char(20) NULL,\n    sm_contract     char(20) NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: store (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.store\n(\n    s_store_sk         int         NOT NULL,\n    s_store_id         char(16)    NULL,\n    s_rec_start_date   date        NULL,\n    s_rec_end_date     date        NULL,\n    s_closed_date_sk   int         NULL,\n    s_store_name       varchar(50) NULL,\n    s_number_employees int         NULL,\n    s_floor_space      int         NULL,\n    s_hours            char(20)    NULL,\n    s_manager          varchar(40) NULL,\n    s_market_id        int         NULL,\n    s_geography_class  varchar(100) NULL,\n    s_market_desc      varchar(100) NULL,\n    s_market_manager   varchar(40)  NULL,\n    s_division_id      int         NULL,\n    s_division_name    varchar(50) NULL,\n    s_company_id       int         NULL,\n    s_company_name     varchar(50) NULL,\n    s_street_number    varchar(10) NULL,\n    s_street_name      varchar(60) NULL,\n    s_street_type      char(15)    NULL,\n    s_suite_number     char(10)    NULL,\n    s_city             varchar(60) NULL,\n    s_county           varchar(30) NULL,\n    s_state            char(2)     NULL,\n    s_zip              char(10)    NULL,\n    s_country          varchar(20) NULL,\n    s_gmt_offset       decimal(5,2) NULL,\n    s_tax_precentage   decimal(5,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: store_returns (Fact)\n * Distribution: HASH on sr_item_sk\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.store_returns\n(\n    sr_returned_date_sk   int         NULL,\n    sr_return_time_sk     int         NULL,\n    sr_item_sk          int         NOT NULL,\n    sr_customer_sk      int         NULL,\n    sr_cdemo_sk         int         NULL,\n    sr_hdemo_sk         int         NULL,\n    sr_addr_sk          int         NULL,\n    sr_store_sk         int         NULL,\n    sr_reason_sk        int         NULL,\n    sr_ticket_number    int         NOT NULL,\n    sr_return_quantity  int         NULL,\n    sr_return_amt       decimal(7,2) NULL,\n    sr_return_tax       decimal(7,2) NULL,\n    sr_return_amt_inc_tax decimal(7,2) NULL,\n    sr_fee              decimal(7,2) NULL,\n    sr_return_ship_cost decimal(7,2) NULL,\n    sr_refunded_cash    decimal(7,2) NULL,\n    sr_reversed_charge  decimal(7,2) NULL,\n    sr_store_credit     decimal(7,2) NULL,\n    sr_net_loss         decimal(7,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH(sr_item_sk),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: store_sales (Fact)\n * Distribution: HASH on ss_item_sk\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE [dbo].[store_sales] (\n    ss_sold_date_sk           INT,\n    ss_sold_time_sk           INT,\n    ss_item_sk                INT         NOT NULL,\n    ss_customer_sk            INT,\n    ss_cdemo_sk               INT,\n    ss_hdemo_sk               INT,\n    ss_addr_sk                INT,\n    ss_store_sk               INT,\n    ss_promo_sk               INT,\n    ss_ticket_number          BIGINT      NOT NULL,\n    ss_quantity               INT,\n    ss_wholesale_cost         DECIMAL(7,2),\n    ss_list_price             DECIMAL(7,2),\n    ss_sales_price            DECIMAL(7,2),\n    ss_ext_discount_amt       DECIMAL(7,2),\n    ss_ext_sales_price        DECIMAL(7,2),\n    ss_ext_wholesale_cost     DECIMAL(7,2),\n    ss_ext_list_price         DECIMAL(7,2),\n    ss_ext_tax                DECIMAL(7,2),\n    ss_coupon_amt             DECIMAL(7,2),\n    ss_net_paid               DECIMAL(7,2),\n    ss_net_paid_inc_tax       DECIMAL(7,2),\n    ss_net_profit             DECIMAL(7,2)\n)\nWITH (\n    DISTRIBUTION = HASH(ss_item_sk),  \n    CLUSTERED COLUMNSTORE INDEX\n);\n\n/*---------------------------------------*\n * Table: time_dim (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.time_dim\n(\n    t_time_sk   int   NOT NULL,\n    t_time_id   char(16) NULL,\n    t_time      int   NULL,\n    t_hour      int   NULL,\n    t_minute    int   NULL,\n    t_second    int   NULL,\n    t_am_pm     char(2)  NULL,\n    t_shift     char(20) NULL,\n    t_sub_shift char(20) NULL,\n    t_meal_time char(20) NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: warehouse (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.warehouse\n(\n    w_warehouse_sk   int         NOT NULL,\n    w_warehouse_id   char(16)    NULL,\n    w_warehouse_name varchar(20) NULL,\n    w_warehouse_sq_ft int        NULL,\n    w_street_number  char(10)    NULL,\n    w_street_name    varchar(60) NULL,\n    w_street_type    char(15)    NULL,\n    w_suite_number   char(10)    NULL,\n    w_city           varchar(60) NULL,\n    w_county         varchar(30) NULL,\n    w_state          char(2)     NULL,\n    w_zip            char(10)    NULL,\n    w_country        varchar(20) NULL,\n    w_gmt_offset     decimal(5,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: web_page (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.web_page\n(\n    wp_web_page_sk   int         NOT NULL,\n    wp_web_page_id   char(16)    NULL,\n    wp_rec_start_date date      NULL,\n    wp_rec_end_date   date      NULL,\n    wp_creation_date_sk int     NULL,\n    wp_access_date_sk  int     NULL,\n    wp_autogen_flag   char(1)  NULL,\n    wp_customer_sk    int      NULL,\n    wp_url            varchar(100) NULL,\n    wp_type           char(50)  NULL,\n    wp_char_count     int       NULL,\n    wp_link_count     int       NULL,\n    wp_image_count    int       NULL,\n    wp_max_ad_count   int       NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: web_returns (Fact)\n * Distribution: HASH on wr_item_sk\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.web_returns\n(\n    wr_returned_date_sk   int         NULL,\n    wr_returned_time_sk   int         NULL,\n    wr_item_sk            int         NOT NULL,\n    wr_refunded_customer_sk int       NULL,\n    wr_refunded_cdemo_sk  int         NULL,\n    wr_refunded_hdemo_sk  int         NULL,\n    wr_refunded_addr_sk   int         NULL,\n    wr_returning_customer_sk int      NULL,\n    wr_returning_cdemo_sk int         NULL,\n    wr_returning_hdemo_sk int         NULL,\n    wr_returning_addr_sk  int         NULL,\n    wr_web_page_sk        int         NULL,\n    wr_reason_sk          int         NULL,\n    wr_order_number       int         NOT NULL,\n    wr_return_quantity    int         NULL,\n    wr_return_amt        decimal(7,2) NULL,\n    wr_return_tax        decimal(7,2) NULL,\n    wr_return_amt_inc_tax decimal(7,2) NULL,\n    wr_fee               decimal(7,2) NULL,\n    wr_return_ship_cost  decimal(7,2) NULL,\n    wr_refunded_cash     decimal(7,2) NULL,\n    wr_reversed_charge   decimal(7,2) NULL,\n    wr_account_credit    decimal(7,2) NULL,\n    wr_net_loss          decimal(7,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH(wr_item_sk),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: web_sales (Fact)\n * Distribution: HASH on ws_item_sk\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.web_sales\n(\n    ws_sold_date_sk          int         NULL,\n    ws_sold_time_sk          int         NULL,\n    ws_ship_date_sk          int         NULL,\n    ws_item_sk               int         NOT NULL,\n    ws_bill_customer_sk       int         NULL,\n    ws_bill_cdemo_sk         int         NULL,\n    ws_bill_hdemo_sk         int         NULL,\n    ws_bill_addr_sk          int         NULL,\n    ws_ship_customer_sk       int         NULL,\n    ws_ship_cdemo_sk         int         NULL,\n    ws_ship_hdemo_sk         int         NULL,\n    ws_ship_addr_sk          int         NULL,\n    ws_web_page_sk           int         NULL,\n    ws_web_site_sk           int         NULL,\n    ws_ship_mode_sk          int         NULL,\n    ws_warehouse_sk          int         NULL,\n    ws_promo_sk              int         NULL,\n    ws_order_number          int         NOT NULL,\n    ws_quantity              int         NULL,\n    ws_wholesale_cost        decimal(7,2) NULL,\n    ws_list_price            decimal(7,2) NULL,\n    ws_sales_price           decimal(7,2) NULL,\n    ws_ext_discount_amt      decimal(7,2) NULL,\n    ws_ext_sales_price       decimal(7,2) NULL,\n    ws_ext_wholesale_cost    decimal(7,2) NULL,\n    ws_ext_list_price        decimal(7,2) NULL,\n    ws_ext_tax               decimal(7,2) NULL,\n    ws_coupon_amt            decimal(7,2) NULL,\n    ws_ext_ship_cost         decimal(7,2) NULL,\n    ws_net_paid              decimal(7,2) NULL,\n    ws_net_paid_inc_tax      decimal(7,2) NULL,\n    ws_net_paid_inc_ship     decimal(7,2) NULL,\n    ws_net_paid_inc_ship_tax decimal(7,2) NULL,\n    ws_net_profit            decimal(7,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = HASH(ws_item_sk),\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n\n/*---------------------------------------*\n * Table: web_site (Dimension)\n * Distribution: REPLICATE\n * Index: Clustered Columnstore Index\n *---------------------------------------*/\nCREATE TABLE dbo.web_site\n(\n    web_site_sk         int         NOT NULL,\n    web_site_id         char(16)    NULL,\n    web_rec_start_date  date        NULL,\n    web_rec_end_date    date        NULL,\n    web_name            char(50)    NULL,\n    web_open_date_sk    int         NULL,\n    web_close_date_sk   int         NULL,\n    web_class           char(50)    NULL,\n    web_manager         char(40)    NULL,\n    web_mkt_id          int         NULL,\n    web_mkt_class       char(50)    NULL,\n    web_mkt_desc        varchar(100) NULL,\n    web_market_manager  char(40)    NULL,\n    web_company_id      int         NULL,\n    web_company_name    varchar(50) NULL,\n    web_street_number   char(10)    NULL,\n    web_street_name     varchar(60) NULL,\n    web_street_type     char(15)    NULL,\n    web_suite_number    char(10)    NULL,\n    web_city            varchar(60) NULL,\n    web_county          varchar(30) NULL,\n    web_state           char(2)     NULL,\n    web_zip             char(10)    NULL,\n    web_country         varchar(20) NULL,\n    web_gmt_offset      decimal(5,2) NULL,\n    web_tax_percentage  decimal(5,2) NULL\n)\nWITH\n(\n    DISTRIBUTION = REPLICATE,\n    CLUSTERED COLUMNSTORE INDEX\n);\nGO\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synapsededicatedsqlpool",
+						"poolName": "synapsededicatedsqlpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/tpc-ds query 5')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "WITH ssr AS (\n    SELECT \n        s_store_id,\n        SUM(sales_price) AS sales,\n        SUM(profit) AS profit,\n        SUM(return_amt) AS returns,\n        SUM(net_loss) AS profit_loss\n    FROM (\n        SELECT  \n            ss_store_sk AS store_sk,\n            ss_sold_date_sk AS date_sk,\n            ss_ext_sales_price AS sales_price,\n            ss_net_profit AS profit,\n            CAST(0 AS DECIMAL(7,2)) AS return_amt,\n            CAST(0 AS DECIMAL(7,2)) AS net_loss\n        FROM synapsededicatedsqlpool.dbo.store_sales\n        UNION ALL\n        SELECT  \n            sr_store_sk AS store_sk,\n            sr_returned_date_sk AS date_sk,\n            CAST(0 AS DECIMAL(7,2)) AS sales_price,\n            CAST(0 AS DECIMAL(7,2)) AS profit,\n            sr_return_amt AS return_amt,\n            sr_net_loss AS net_loss\n        FROM synapsededicatedsqlpool.dbo.store_returns\n    ) salesreturns\n    JOIN synapsededicatedsqlpool.dbo.date_dim ON date_sk = d_date_sk\n    JOIN synapsededicatedsqlpool.dbo.store ON store_sk = s_store_sk\n    WHERE d_date BETWEEN CAST('2000-08-19' AS DATE) AND DATEADD(DAY, 14, CAST('2000-08-19' AS DATE))\n    GROUP BY s_store_id\n),\ncsr AS (\n    SELECT \n        cp_catalog_page_id,\n        SUM(sales_price) AS sales,\n        SUM(profit) AS profit,\n        SUM(return_amt) AS returns,\n        SUM(net_loss) AS profit_loss\n    FROM (\n        SELECT  \n            cs_catalog_page_sk AS page_sk,\n            cs_sold_date_sk AS date_sk,\n            cs_ext_sales_price AS sales_price,\n            cs_net_profit AS profit,\n            CAST(0 AS DECIMAL(7,2)) AS return_amt,\n            CAST(0 AS DECIMAL(7,2)) AS net_loss\n        FROM synapsededicatedsqlpool.dbo.catalog_sales\n        UNION ALL\n        SELECT  \n            cr_catalog_page_sk AS page_sk,\n            cr_returned_date_sk AS date_sk,\n            CAST(0 AS DECIMAL(7,2)) AS sales_price,\n            CAST(0 AS DECIMAL(7,2)) AS profit,\n            cr_return_amount AS return_amt,\n            cr_net_loss AS net_loss\n        FROM synapsededicatedsqlpool.dbo.catalog_returns\n    ) salesreturns\n    JOIN synapsededicatedsqlpool.dbo.date_dim ON date_sk = d_date_sk\n    JOIN synapsededicatedsqlpool.dbo.catalog_page ON page_sk = cp_catalog_page_sk\n    WHERE d_date BETWEEN CAST('2000-08-19' AS DATE) AND DATEADD(DAY, 14, CAST('2000-08-19' AS DATE))\n    GROUP BY cp_catalog_page_id\n),\nwsr AS (\n    SELECT \n        web_site_id,\n        SUM(sales_price) AS sales,\n        SUM(profit) AS profit,\n        SUM(return_amt) AS returns,\n        SUM(net_loss) AS profit_loss\n    FROM (\n        SELECT  \n            ws_web_site_sk AS wsr_web_site_sk,\n            ws_sold_date_sk AS date_sk,\n            ws_ext_sales_price AS sales_price,\n            ws_net_profit AS profit,\n            CAST(0 AS DECIMAL(7,2)) AS return_amt,\n            CAST(0 AS DECIMAL(7,2)) AS net_loss\n        FROM synapsededicatedsqlpool.dbo.web_sales\n        UNION ALL\n        SELECT  \n            ws_web_site_sk AS wsr_web_site_sk,\n            wr_returned_date_sk AS date_sk,\n            CAST(0 AS DECIMAL(7,2)) AS sales_price,\n            CAST(0 AS DECIMAL(7,2)) AS profit,\n            wr_return_amt AS return_amt,\n            wr_net_loss AS net_loss\n        FROM synapsededicatedsqlpool.dbo.web_returns\n        LEFT JOIN synapsededicatedsqlpool.dbo.web_sales\n        ON wr_item_sk = ws_item_sk AND wr_order_number = ws_order_number\n    ) salesreturns\n    JOIN synapsededicatedsqlpool.dbo.date_dim ON date_sk = d_date_sk\n    JOIN synapsededicatedsqlpool.dbo.web_site ON wsr_web_site_sk = web_site_sk\n    WHERE d_date BETWEEN CAST('2000-08-19' AS DATE) AND DATEADD(DAY, 14, CAST('2000-08-19' AS DATE))\n    GROUP BY web_site_id\n)\n\nSELECT TOP 100\n    channel,\n    id,\n    SUM(sales) AS sales,\n    SUM(returns) AS returns,\n    SUM(profit) AS profit\nFROM (\n    SELECT \n        'store channel' AS channel,\n        'store' + CAST(s_store_id AS VARCHAR(50)) AS id,\n        sales,\n        returns,\n        (profit - profit_loss) AS profit\n    FROM ssr\n\n    UNION ALL\n\n    SELECT \n        'catalog channel' AS channel,\n        'catalog_page' + CAST(cp_catalog_page_id AS VARCHAR(50)) AS id,\n        sales,\n        returns,\n        (profit - profit_loss) AS profit\n    FROM csr\n\n    UNION ALL\n\n    SELECT \n        'web channel' AS channel,\n        'web_site' + CAST(web_site_id AS VARCHAR(50)) AS id,\n        sales,\n        returns,\n        (profit - profit_loss) AS profit\n    FROM wsr\n) x\nGROUP BY ROLLUP(channel, id)\nORDER BY channel, id;\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "synapsededicatedsqlpool",
+						"poolName": "synapsededicatedsqlpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapsededicatedsqlpool')]",
+			"type": "Microsoft.Synapse/workspaces/sqlPools",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"collation": "SQL_Latin1_General_CP1_CI_AS",
+				"maxSizeBytes": 263882790666240,
+				"annotations": []
+			},
+			"dependsOn": [],
+			"location": "westus2"
+		}
+	]
+}
