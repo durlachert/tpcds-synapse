@@ -1,0 +1,79 @@
+{
+	"name": "Dataflow2",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "AzureSynapseAnalyticsTable1",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DelimitedText2",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "aggregate1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          cc_call_center_sk as integer,",
+				"          cc_call_center_id as string,",
+				"          cc_rec_start_date as date,",
+				"          cc_rec_end_date as date,",
+				"          cc_closed_date_sk as integer,",
+				"          cc_open_date_sk as integer,",
+				"          cc_name as string,",
+				"          cc_class as string,",
+				"          cc_employees as integer,",
+				"          cc_sq_ft as integer,",
+				"          cc_hours as string,",
+				"          cc_manager as string,",
+				"          cc_mkt_id as integer,",
+				"          cc_mkt_class as string,",
+				"          cc_mkt_desc as string,",
+				"          cc_market_manager as string,",
+				"          cc_division as integer,",
+				"          cc_division_name as string,",
+				"          cc_company as integer,",
+				"          cc_company_name as string,",
+				"          cc_street_number as string,",
+				"          cc_street_name as string,",
+				"          cc_street_type as string,",
+				"          cc_suite_number as string,",
+				"          cc_city as string,",
+				"          cc_county as string,",
+				"          cc_state as string,",
+				"          cc_zip as string,",
+				"          cc_country as string,",
+				"          cc_gmt_offset as decimal(5,2),",
+				"          cc_tax_percentage as decimal(5,2)",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table',",
+				"     staged: true) ~> source1",
+				"source1 aggregate(cc_tax_percentage = avg(cc_tax_percentage)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink1"
+			]
+		}
+	}
+}
