@@ -1,0 +1,17 @@
+{
+	"name": "insert data into adworks tables",
+	"properties": {
+		"content": {
+			"query": "TRUNCATE TABLE dbo.CustomerData;\nTRUNCATE TABLE dbo.Date;\nTRUNCATE TABLE dbo.ProductData;\nTRUNCATE TABLE dbo.Reseller;\nTRUNCATE TABLE dbo.Sales;\nTRUNCATE TABLE dbo.SalesOrder;\nTRUNCATE TABLE dbo.SalesTerritory;\n\n\nCOPY INTO dbo.CustomerData\nFROM 'https://tfsynapsestorage.blob.core.windows.net/datalake/adworksraw/Source/CustomerData/CustomerData.csv'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY= 'Managed Identity'),\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '0x0A',\n    FIRSTROW = 1\n);\n\nCOPY INTO dbo.Date\nFROM 'https://tfsynapsestorage.blob.core.windows.net/datalake/adworksraw/Source/Date/Date.csv'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY= 'Managed Identity'),\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '0x0A',\n    FIRSTROW = 1\n);\n\nCOPY INTO dbo.ProductData\nFROM 'https://tfsynapsestorage.blob.core.windows.net/datalake/adworksraw/Source/ProductData/ProductData.csv'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY= 'Managed Identity'),\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '0x0A',\n    FIRSTROW = 1\n);\n\nCOPY INTO dbo.Reseller\nFROM 'https://tfsynapsestorage.blob.core.windows.net/datalake/adworksraw/Source/Reseller/Reseller.csv'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY= 'Managed Identity'),\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '0x0A',\n    FIRSTROW = 1\n);\n\nCOPY INTO dbo.Sales\nFROM 'https://tfsynapsestorage.blob.core.windows.net/datalake/adworksraw/Source/Sales/Sales.csv'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY= 'Managed Identity'),\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '0x0A',\n    FIRSTROW = 1\n);\n\nCOPY INTO dbo.SalesOrder\nFROM 'https://tfsynapsestorage.blob.core.windows.net/datalake/adworksraw/Source/SalesOrder/SalesOrder.csv'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY= 'Managed Identity'),\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '0x0A',\n    FIRSTROW = 1\n);\n\nCOPY INTO dbo.SalesTerritory\nFROM 'https://tfsynapsestorage.blob.core.windows.net/datalake/adworksraw/Source/SalesTerritory/SalesTerritory.csv'\nWITH (\n    FILE_TYPE = 'CSV',\n    CREDENTIAL = (IDENTITY= 'Managed Identity'),\n    FIELDTERMINATOR = ',',\n    ROWTERMINATOR = '0x0A',\n    FIRSTROW = 1\n);\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "synapsededicatedsqlpool",
+				"poolName": "synapsededicatedsqlpool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

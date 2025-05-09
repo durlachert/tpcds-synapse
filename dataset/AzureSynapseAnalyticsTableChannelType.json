@@ -1,0 +1,26 @@
+{
+	"name": "AzureSynapseAnalyticsTableChannelType",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "ChannelTypeId",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "ChannelTypeName",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "ChannelType"
+		}
+	}
+}

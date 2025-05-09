@@ -1,0 +1,50 @@
+{
+	"name": "AzureSynapseAnalyticsTableReseller",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSynapseAnalytics1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "PostalCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CountryRegion",
+				"type": "nvarchar"
+			},
+			{
+				"name": "StateProvince",
+				"type": "nvarchar"
+			},
+			{
+				"name": "City",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Reseller",
+				"type": "nvarchar"
+			},
+			{
+				"name": "BusinessType",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ResellerId",
+				"type": "nvarchar"
+			},
+			{
+				"name": "ResellerKey",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Reseller"
+		}
+	}
+}
