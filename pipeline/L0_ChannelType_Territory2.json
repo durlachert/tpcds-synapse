@@ -21,6 +21,13 @@
 							"modifiedBefore": "currentTimestamp()"
 						}
 					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "linkedServiceStagingDataFlow",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "synapsefs"
+					},
 					"compute": {
 						"coreCount": 8,
 						"computeType": "General"
@@ -47,6 +54,13 @@
 							"modifiedAfter": "toTimestamp(\"01-01-1900\")",
 							"modifiedBefore": "currentTimestamp()"
 						}
+					},
+					"staging": {
+						"linkedService": {
+							"referenceName": "linkedServiceStagingDataFlow",
+							"type": "LinkedServiceReference"
+						},
+						"folderPath": "synapsefs"
 					},
 					"compute": {
 						"coreCount": 8,
